@@ -1,12 +1,20 @@
 import java.util.Random;
 
 public class Minefield {
-    boolean[][] minefield;
-    int[][] minedNeighbours;
-    int maxMines;
-    int currentMines;
+    private boolean[][] minefield;
+    private int[][] minedNeighbours;
+    private int maxMines;
+    private int currentMines;
 
-    public void Minefield(int rows, int columns, int maxMines) {
+    public Minefield(int rows, int columns, int maxMines) {
+        if(rows < 1 || columns < 1) {
+            System.out.println("ERROR: Minefield must be at least 1x1.");
+            return;
+        }
+        if(maxMines > (rows*columns)-1) {
+            System.out.println("ERROR: maxMines cannot be greater than the available amount of squares.");
+            return;
+        }
         minefield = new boolean[rows][columns];
         minedNeighbours = new int[rows][columns];
         this.maxMines = maxMines;
@@ -26,19 +34,31 @@ public class Minefield {
                 }
             }
         }
+        currentMines++;
+        return true;
 
     }
 
     public void populate() {
         Random random = new Random();
+        int minefieldSize = minefield.length*minefield[0].length - 1;
         while(currentMines < maxMines) {
-            int randomRow = random.nextInt(minefield.length);
-            int randomColumn = random.nextInt(minefield[0].length); // Taking the value from the 1st array, since all arrays have the same length
-            // This test is here, rather than in mineTile, since the design document stated populate should exempt (0,0), but not that mineTile should.
-            if(randomRow == 0 && randomColumn == 0) {
-                continue;
+            int randomPosition = random.nextInt(minefieldSize) + 1;
+            minefieldSize--;
+            int h = 0;
+            main: for(int i = 0; i < minefield.length; i++) {
+                for(int j = 0; j < minefield[0].length; j++) {
+                    if(!minefield[i][j]) {
+                        if(h < randomPosition) {
+                            h++;
+                        } else {
+                            if(mineTile(i, j)) {
+                                break main;
+                            }
+                        }
+                    }
+                }
             }
-            mineTile(randomRow, randomColumn);
         }
     }
 
@@ -56,5 +76,13 @@ public class Minefield {
             output += "\n";
         }
         return output;
+    }
+
+    public boolean[][] getMinefield() {
+        return minefield;
+    }
+
+    public int[][] getMinedNeighbours() {
+        return minedNeighbours;
     }
 }
