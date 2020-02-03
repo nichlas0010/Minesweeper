@@ -19,7 +19,6 @@ public class Minefield {
         minedNeighbours = new int[rows][columns];
         this.maxMines = maxMines;
         currentMines = 0;
-        populate();
     }
 
     public boolean mineTile(int row, int column) {
