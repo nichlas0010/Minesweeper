@@ -8,12 +8,12 @@ public class MinefieldTest {
     public void checkMinefieldSize() {
         for(int i = 1; i <= 10; i++) {
             for(int j = 1; j <= 10; j++) {
-            Minefield M = new Minefield(i, j, 5);
+            Minefield M = new Minefield(i, j, i*j-1);
             boolean[][] mineField = M.getMinefield();
             assertEquals(i*j, mineField.length*mineField[0].length);
             int[][] minedNeighbours = M.getMinedNeighbours();
             assertEquals(i*j, minedNeighbours.length*minedNeighbours[0].length);
-            assertEquals(5, M.getMaxMines());
+            assertEquals(i*j-1, M.getMaxMines());
             }
         }
 
@@ -24,18 +24,19 @@ public class MinefieldTest {
     public void checkpopulate() {
         for(int i = 1; i <= 10; i++) {
             for(int j = 1; j <= 10; j++) {
-                for(int k = 1; k <= i*j-1; k++) {
+                for(int k = 0; k < i*j-1; k++) {
                     Minefield M = new Minefield(i, j, k);
+                    assertEquals(k, M.getMaxMines());
                     M.populate();
                     assertEquals(k, M.getCurrentMines());
                     boolean[][] minefield = M.getMinefield();
                     int[][] minedNeighbours = M.getMinedNeighbours();
-                    for(int l = 0; l <= minefield.length; l++) {
-                        for(int m = 0; m <= minefield[0].length; m++) {
+                    for(int l = 0; l < minefield.length; l++) {
+                        for(int m = 0; m < minefield[0].length; m++) {
                             int q = 0;
                             for(int o = l-1; o <= l+1; o++) {
                                 for(int p = m-1; p <= m+1; p++) {
-                                    if(i >= 0 && i < minefield.length && j >= 0 && j < minefield[0].length) {
+                                    if(o >= 0 && o < minefield.length && p >= 0 && p < minefield[0].length) {
                                         if(minefield[o][p]) {
                                             q++;
                                         }
@@ -62,7 +63,7 @@ public class MinefieldTest {
 
     // Check for toString()
     @Test
-    public void checkpopulate() {
+    public void checktoString() {
         for(int i = 1; i <= 10; i++) {
             for(int j = 1; j <= 10; j++) {
                 for(int k = 1; k <= i*j-1; k++) {

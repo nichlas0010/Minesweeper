@@ -73,7 +73,7 @@ public class Minefield {
     public void populate() {
         Random random = new Random();
         // Determine the amount of free tiles, excluding (0,0)
-        int freeTiles = -1;
+        int freeTiles = 0;
         for(int i = 0; i < minefield.length; i++) {
             for(int j = 0; j < minefield.length; j++) {
                 if(!minefield[i][j]) {
@@ -81,22 +81,25 @@ public class Minefield {
                 }
             }
         }
-        main: while(currentMines < maxMines) {
+        while(currentMines < maxMines && freeTiles > 0) {
             // Pick a random position between 0 and our amount of free tiles, then increment by one to avoid (0,0)
+            System.out.println(freeTiles);
+            System.out.println(currentMines);
+            System.out.println(maxMines);
             int randomPosition = random.nextInt(freeTiles) + 1;
             freeTiles--;
             int currentPosition = 0;
             // Iterate through the minefield to find the randomPositionth free tile, then mine it
-            for(int i = 0; i < minefield.length; i++) {
+            main: for(int i = 0; i < minefield.length; i++) {
                 for(int j = 0; j < minefield[0].length; j++) {
                     // We only care about free tiles
                     if(!minefield[i][j]) {
                         if(currentPosition < randomPosition) {
-                            h++;
+                            currentPosition++;
                         } else {
                             if(mineTile(i, j)) {
                                 // Continue the while-loop
-                                continue main;
+                                break main;
                             }
                         }
                     }
