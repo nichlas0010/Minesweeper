@@ -5,15 +5,17 @@ public class MinefieldTest {
 
     // Simple existence check for the Minefield constructor, checks that the minefields are the right size.
     @Test
-    public void checkMinefieldSize() {
-        for(int i = 1; i <= 10; i++) {
-            for(int j = 1; j <= 10; j++) {
-            Minefield M = new Minefield(i, j, i*j-1);
-            boolean[][] mineField = M.getMinefield();
-            assertEquals(i*j, mineField.length*mineField[0].length);
-            int[][] minedNeighbours = M.getMinedNeighbours();
-            assertEquals(i*j, minedNeighbours.length*minedNeighbours[0].length);
-            assertEquals(i*j-1, M.getMaxMines());
+    public void checkConstructor() {
+        // Iterate through every combination between 1x1 and 10x10
+        for(int rows = 1; rows <= 10; rows++) {
+            for(int columns = 1; columns <= 10; columns++) {
+                // Generate a minefield of the designated size. Mines set to 0, since that's not what we're checking
+                Minefield M = new Minefield(rows, columns, 0);
+                boolean[][] mineField = M.getMinefield();
+                int[][] minedNeighbours = M.getMinedNeighbours();
+                // Then make sure they're the correct size
+                assertEquals(rows*columns, mineField.length*mineField[0].length);
+                assertEquals(rows*columns, minedNeighbours.length*minedNeighbours[0].length);
             }
         }
 
@@ -22,28 +24,39 @@ public class MinefieldTest {
     // Check for populate()
     @Test
     public void checkpopulate() {
-        for(int i = 1; i <= 10; i++) {
-            for(int j = 1; j <= 10; j++) {
-                for(int k = 0; k < i*j-1; k++) {
-                    Minefield M = new Minefield(i, j, k);
-                    assertEquals(k, M.getMaxMines());
+        // Iterate through every combination between 1x1, and 10x10, and give them rows*columns-1 mines
+        // This is so we keep (0,0) clear.
+        for(int rows = 1; rows <= 10; rows++) {
+            for(int columns = 1; columns <= 10; columns++) {
+                for(int mines = 0; mines <= rows*columns-1; mines++) {
+                    // Create our minefield
+                    Minefield M = new Minefield(rows, columns, mines);
+                    // Check that we have the correct maximum of mines
+                    assertEquals(mines, M.getMaxMines());
+                    // Populate the minefield
                     M.populate();
-                    assertEquals(k, M.getCurrentMines());
+                    // Check that we have the correct amount of mines
+                    assertEquals(mines, M.getCurrentMines());
                     boolean[][] minefield = M.getMinefield();
                     int[][] minedNeighbours = M.getMinedNeighbours();
-                    for(int l = 0; l < minefield.length; l++) {
-                        for(int m = 0; m < minefield[0].length; m++) {
-                            int q = 0;
-                            for(int o = l-1; o <= l+1; o++) {
-                                for(int p = m-1; p <= m+1; p++) {
-                                    if(o >= 0 && o < minefield.length && p >= 0 && p < minefield[0].length) {
-                                        if(minefield[o][p]) {
-                                            q++;
+                    // Loop through the entire minefield
+                    for(int row = 0; row < minefield.length; row++) {
+                        for(int column = 0; column < minefield[0].length; column++) {
+                            int mineCount = 0;
+                            // For every tile, loop through the 9 neighbouring tiles (including itself)
+                            for(int neighbourRow = row-1; neighbourRow <= row+1; neighbourRow++) {
+                                for(int neighbourColumn = column-1; neighbourColumn <= column+1; neighbourColumn++) {
+                                    // If it's within bounds, check if there's a mine
+                                    if(neighbourRow >= 0 && neighbourRow < minefield.length && neighbourColumn >= 0 && neighbourColumn < minefield[0].length) {
+                                        if(minefield[neighbourRow][neighbourColumn]) {
+                                            // If there is, iterate mineCount
+                                            mineCount++;
                                         }
                                     }
                                 }
                             }
-                            assertEquals(minedNeighbours[l][m], q);
+                            // Check that the minedNeighbours array has the correct count of neighbouring mines
+                            assertEquals(minedNeighbours[row][column], mineCount);
                         }
                     }
                 }
@@ -54,29 +67,44 @@ public class MinefieldTest {
     // Check for mineTile()
     @Test
     public void checkMineTile() {
+        // Create our minefield, a 2x2 minefield with a max of 2 mines
         Minefield M = new Minefield(2, 2, 2);
-        assertEquals(true, M.mineTile(1, 0));
-        assertEquals(false, M.mineTile(1, 0));
-        assertEquals(true, M.mineTile(1, 1));
-        assertEquals(false, M.mineTile(0, 1));
+        // Place a mine in an empty space, should return true
+        assertTrue(M.mineTile(1, 0));
+        // Place a mine in a full space, should return false since it's already filled
+        assertFalse(M.mineTile(1, 0));
+        // Place a second mine in an empty space, should return true
+        assertTrue(M.mineTile(1, 1));
+        // Place a third mine in an empty space, should return false since we're exceeding the maximum mines
+        assertFalse(M.mineTile(0, 1));
     }
 
     // Check for toString()
     @Test
     public void checktoString() {
-        for(int i = 1; i <= 10; i++) {
-            for(int j = 1; j <= 10; j++) {
-                for(int k = 1; k <= i*j-1; k++) {
-                    Minefield M = new Minefield(i, j, k);
+        // Iterate through all the combinations between 1x1, and 10x10, with a maximum of rows*columns-1 mines.
+        for(int rows = 1; rows <= 10; rows++) {
+            for(int columns = 1; columns <= 10; columns++) {
+                for(int mines = 1; mines <= rows*columns-1; mines++) {
+                    // Create the minefield
+                    Minefield M = new Minefield(rows, columns, mines);
+                    // Populate it
                     M.populate();
+                    // And get the output
                     String toStringOutput = M.toString();
-                    int l = 0;
+                    // If you want to see the output in the terminal, uncomment the following line
+                    //System.out.println(toStringOutput);
+                    int minesFound = 0;
+                    // Loop through all the characters of the output
                     for(int m = 0; m < toStringOutput.length(); m++) {
+                        // Check if we found a mine
                         if(toStringOutput.charAt(m) == '*') {
-                            l++;
+                            // If we did, increment minesFound
+                            minesFound++;
                         }
                     }
-                    assertEquals(k, l);
+                    // Make sure we found the right amount of mines
+                    assertEquals(mines, minesFound);
                 }
             }
         }

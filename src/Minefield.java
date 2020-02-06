@@ -43,8 +43,8 @@ public class Minefield {
      * @return true if tile was mined successfully, false if mining failed
      */
     public boolean mineTile(int row, int column) {
-        // These two if-statements have been split for readibility purposes
-        // This check makes sure we're not exceeding the bouns of the minefield, in either direction
+        // These two if-statements have been split for readability purposes
+        // This check makes sure we're not exceeding the bounds of the minefield, in either direction
         if(row < 0 || row >= minefield.length || column < 0 || column >= minefield[0].length) {
             return false;
         }
@@ -73,9 +73,9 @@ public class Minefield {
     public void populate() {
         Random random = new Random();
         // Determine the amount of free tiles, excluding (0,0)
-        int freeTiles = 0;
+        int freeTiles = -1;
         for(int i = 0; i < minefield.length; i++) {
-            for(int j = 0; j < minefield.length; j++) {
+            for(int j = 0; j < minefield[0].length; j++) {
                 if(!minefield[i][j]) {
                     freeTiles++;
                 }
@@ -83,9 +83,6 @@ public class Minefield {
         }
         while(currentMines < maxMines && freeTiles > 0) {
             // Pick a random position between 0 and our amount of free tiles, then increment by one to avoid (0,0)
-            System.out.println(freeTiles);
-            System.out.println(currentMines);
-            System.out.println(maxMines);
             int randomPosition = random.nextInt(freeTiles) + 1;
             freeTiles--;
             int currentPosition = 0;
@@ -116,15 +113,19 @@ public class Minefield {
      */
     public String toString() {
         String output = "";
+        // Iterate through the minefield
         for(int i = 0; i < minefield.length; i++) {
             for(int j = 0; j < minefield[0].length; j++) {
+                // If there's a mine, output "*"
                 if(minefield[i][j]) {
                     output += "*";
                 }
+                // Otherwise, add the integer representing the amount of mined neighbours
                 else {
                     output += minedNeighbours[i][j];
                 }
             }
+            // At the end of each row, add a newline
             output += "\n";
         }
         return output;
@@ -144,10 +145,18 @@ public class Minefield {
         return minedNeighbours;
     }
 
+    /**
+     *
+     * @return the int representing the current amount of mines
+     */
     public int getCurrentMines() {
         return currentMines;
     }
 
+    /**
+     *
+     * @return the int representing the maximum amount of mines passed by the constructor
+     */
     public int getMaxMines() {
         return maxMines;
     }
