@@ -80,8 +80,12 @@ public class MinefieldTest {
     }
 
     // Check for toString()
+    // This check is two-pronged.
+    // First we do a general check, checking that it outputs the correct amount of mines for every instance of 10x10.
+    // Second, we do a more specific check, checking that specific instances are correct.
     @Test
     public void checktoString() {
+        // First the general check
         // Iterate through all the combinations between 1x1, and 10x10, with a maximum of rows*columns-1 mines.
         for(int rows = 1; rows <= 10; rows++) {
             for(int columns = 1; columns <= 10; columns++) {
@@ -108,5 +112,21 @@ public class MinefieldTest {
                 }
             }
         }
+        // Then some more specific checks
+        // 3x3, bomb in bottom right
+        Minefield M = new Minefield(3, 3, 1);
+        assertTrue(M.mineTile(2, 2));
+        assertEquals("000\n011\n01*\n", M.toString());
+
+        // 2x2, bombs in top right and bottom left
+        M = new Minefield(2, 2, 2);
+        assertTrue(M.mineTile(1, 1));
+        assertTrue( M.mineTile(0, 0));
+        assertEquals("*2\n2*\n", M.toString());
+
+        //3x1, bomb in the middle
+        M = new Minefield(3, 1, 1);
+        assertTrue(M.mineTile(1, 0));
+        assertEquals("1\n*\n1\n", M.toString());
     }
 }
