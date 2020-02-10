@@ -1,6 +1,8 @@
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.nio.BufferOverflowException;
+
 public class MinefieldTest {
 
     // Simple existence check for the Minefield constructor, checks that the minefields are the right size.

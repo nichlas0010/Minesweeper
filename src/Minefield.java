@@ -1,3 +1,4 @@
+import java.nio.BufferUnderflowException;
 import java.util.Random;
 
 public class Minefield {
@@ -30,7 +31,6 @@ public class Minefield {
         minefield = new boolean[rows][columns];
         minedNeighbours = new int[rows][columns];
         this.maxMines = maxMines;
-        currentMines = 0;
     }
 
     /**
@@ -111,6 +111,7 @@ public class Minefield {
      *
      * @return String consisting of the entire minefield.
      */
+    @Override
     public String toString() {
         String output = "";
         // Iterate through the minefield
