@@ -21,12 +21,10 @@ public class Minefield {
      */
     public Minefield(int rows, int columns, int maxMines) {
         if(rows < 1 || columns < 1) {
-            System.out.println("ERROR: Minefield must be at least 1x1.");
-            return;
+            throw new NegativeArraySizeException("Rows: " + rows + ", columns: " + columns);
         }
         if(maxMines > (rows*columns)-1) {
-            System.out.println("ERROR: maxMines cannot be greater than the available amount of squares.");
-            return;
+            throw new IllegalArgumentException("maxMines is larger than is allowed. Rows: " + rows + ", columns: " + columns + ", maxMines: " + maxMines);
         }
         minefield = new boolean[rows][columns];
         minedNeighbours = new int[rows][columns];
@@ -46,9 +44,9 @@ public class Minefield {
         // These two if-statements have been split for readability purposes
         // This check makes sure we're not exceeding the bounds of the minefield, in either direction
         if(row < 0 || row >= minefield.length || column < 0 || column >= minefield[0].length) {
-            return false;
+            throw new ArrayIndexOutOfBoundsException("row: " + row + ", column: " + column);
         }
-        // This check makes sure the tile has not aready been mined, and that we have spare mines.
+        // This check makes sure the tile has not already been mined, and that we have spare mines.
         if(minefield[row][column] || currentMines >= maxMines) {
             return false;
         }

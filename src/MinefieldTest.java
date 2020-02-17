@@ -1,8 +1,6 @@
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.nio.BufferOverflowException;
-
 public class MinefieldTest {
 
     // Simple existence check for the Minefield constructor, checks that the minefields are the right size.
@@ -23,9 +21,21 @@ public class MinefieldTest {
 
     }
 
+    // Check for making a negative size array
+    @Test(expected = NegativeArraySizeException.class)
+    public void checkNegativeArray() {
+        Minefield M = new Minefield(0, 0, 0);
+    }
+
+    // Test for having a larger maxMines than allowed
+    @Test(expected = IllegalArgumentException.class)
+    public void checkIllegalArgument() {
+        Minefield M = new Minefield(1, 1, 1);
+    }
+
     // Check for populate()
     @Test
-    public void checkpopulate() {
+    public void checkPopulate() {
         // Iterate through every combination between 1x1, and 10x10, and give them rows*columns-1 mines
         // This is so we keep (0,0) clear.
         for(int rows = 1; rows <= 10; rows++) {
@@ -81,17 +91,24 @@ public class MinefieldTest {
         assertFalse(M.mineTile(0, 1));
     }
 
-    // Check for toString()
+    // Test for mining a tile that's out of bounds
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void mineOutOfBounds() {
+        Minefield M = new Minefield(2,2,2);
+        M.mineTile(0,-1);
+    }
+
+    // Checks for toString()
     // This check is two-pronged.
     // First we do a general check, checking that it outputs the correct amount of mines for every instance of 10x10.
-    // Second, we do a more specific check, checking that specific instances are correct.
+    // Second, we do more specific checks, checking that specific instances are correct.
     @Test
-    public void checktoString() {
+    public void checkToStringGeneral() {
         // First the general check
         // Iterate through all the combinations between 1x1, and 10x10, with a maximum of rows*columns-1 mines.
-        for(int rows = 1; rows <= 10; rows++) {
-            for(int columns = 1; columns <= 10; columns++) {
-                for(int mines = 1; mines <= rows*columns-1; mines++) {
+        for (int rows = 1; rows <= 10; rows++) {
+            for (int columns = 1; columns <= 10; columns++) {
+                for (int mines = 1; mines <= rows * columns - 1; mines++) {
                     // Create the minefield
                     Minefield M = new Minefield(rows, columns, mines);
                     // Populate it
@@ -102,9 +119,9 @@ public class MinefieldTest {
                     //System.out.println(toStringOutput);
                     int minesFound = 0;
                     // Loop through all the characters of the output
-                    for(int m = 0; m < toStringOutput.length(); m++) {
+                    for (int m = 0; m < toStringOutput.length(); m++) {
                         // Check if we found a mine
-                        if(toStringOutput.charAt(m) == '*') {
+                        if (toStringOutput.charAt(m) == '*') {
                             // If we did, increment minesFound
                             minesFound++;
                         }
@@ -114,20 +131,27 @@ public class MinefieldTest {
                 }
             }
         }
+    }
+    @Test
+    public void checkToString3x3() {
         // Then some more specific checks
         // 3x3, bomb in bottom right
         Minefield M = new Minefield(3, 3, 1);
         assertTrue(M.mineTile(2, 2));
         assertEquals("000\n011\n01*\n", M.toString());
-
+    }
+    @Test
+    public void checkToString2x2() {
         // 2x2, bombs in top right and bottom left
-        M = new Minefield(2, 2, 2);
+        Minefield M = new Minefield(2, 2, 2);
         assertTrue(M.mineTile(1, 1));
-        assertTrue( M.mineTile(0, 0));
+        assertTrue(M.mineTile(0, 0));
         assertEquals("*2\n2*\n", M.toString());
-
+    }
+    @Test
+    public void checkToString3x1() {
         //3x1, bomb in the middle
-        M = new Minefield(3, 1, 1);
+        Minefield M = new Minefield(3, 1, 1);
         assertTrue(M.mineTile(1, 0));
         assertEquals("1\n*\n1\n", M.toString());
     }
